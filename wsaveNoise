@@ -1,0 +1,5 @@
+#!/bin/sh
+
+OUTDIR=~/wwwdune/protodune/test/test05
+
+cp ib4taiNoiseVsChan/iceberg006003/chmet_nsgrms*.png $OUTDIR

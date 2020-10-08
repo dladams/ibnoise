@@ -1,0 +1,65 @@
+#!/bin/sh
+
+RUNLIM1=$1
+RUNLIM2=$2
+shift 2
+PRCS=
+OPTS=
+for ARG in $@; do
+  if [ $ARG = chan -o $ARG = dft -o $ARG = dft200 ]; then
+    PRCS="$PRCS $ARG"
+  elif [ $ARG = retry -o $ARG = xrootd -o $ARG = noxrootd ]; then
+    OPTS="$OPTS $ARG"
+  else
+    echo ERROR: Invalid argument: $ARG
+    exit 9
+  fi
+done
+#echo Recs: $PRCS
+#echo Opts: $OPTS
+
+if [ -z "$RUNLIM2" -o -z "$PRCS" ]; then
+  echo Usage: $0 RUNLIM1 RUNLIM2 ARGS [OPTS]
+  echo "  PRCS = chan dft dft200"
+  echo "  OPTS = retry xrootd noxrootd"
+  exit 0
+fi
+
+GRPFILE=$DUNEPROC_DIR/doc/icebergRunGroups.txt
+while read LINE; do
+  read -r -a WORDS <<< "$LINE"
+  WORD=${WORDS[0]}
+  IFS="-" read -r -a RUNS <<< "$WORD"
+  NRUN=${#RUNS[@]}
+  RUN1=${RUNS[0]}
+  RUN2=${RUNS[1]}
+  if [ -z "$RUN2" ]; then
+    continue
+  fi
+  if [ "$RUN1" -ge $RUNLIM1 -a "$RUN2" -le $RUNLIM2 ] 2>/dev/null; then
+    #echo
+    #echo $WORD
+    SFRUN1=$(printf "%06d" $RUN1)
+    SFRUN2=$(printf "%06d" $RUN2)
+    GRP=ibgroup$SFRUN1-$SFRUN2
+    HAVE=$(find $HOME/data/dune/datasets -name $GRP.txt 2>/dev/null)
+    if [ -z "$HAVE" ]; then
+      ibGroupRuns $RUN1 $RUN2 - >/dev/null
+    #else
+    #  echo Found $HAVE
+    fi
+    PER=$(ibRunPeriod $RUN1)
+    for PRC in $PRCS; do
+      for REC in tai cnr; do
+        if [ $PRC = chan ]; then
+          COM="duneproc ib4${REC}NoiseVsChan/setIceberg$PER $GRP $OPTS"
+        elif [ $PRC = dft ]; then
+          COM="duneproc ib4${REC}NoiseDft/setIceberg$PER $GRP $OPTS"
+        elif [ $PRC = dft200 ]; then
+          COM="duneproc ib4${REC}NoiseDft/ibsetDftFmax200/setIceberg$PER $GRP $OPTS"
+        fi
+        echo $COM
+      done
+    done
+  fi
+done < $GRPFILE

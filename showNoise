@@ -1,0 +1,13 @@
+RUN1=$1
+RUN2=$2
+NEVT=$3
+if [ -z "$NEVT" ]; then
+  NEVT=0
+fi
+if [ -z "$RUN2" ]; then
+  RUN2=$RUN1
+fi
+./saveNoise $RUN1 $RUN2
+drawNoiseVsTime $RUN1 $RUN2 $NEVT nsgrms 100 true; view noiseVsTime_nsgrms_median_00${RUN1}-00${RUN2}.png &
+drawNoiseVsTime $RUN1 $RUN2 $NEVT nsgrms50 1500 true; view noiseVsTime_nsgrms50_median_00${RUN1}-00${RUN2}.png &
+
