@@ -1,9 +1,11 @@
 # ibnoise/README.txt
-# 30sep2020: Colied from ibnoise.1
+#
+# David Adams
+# Top level package for Iceberg noise analysis.
+#
+# Sep 2020: Updated for Iceberg 4.
 
-# To create noise vs. channel for a run or sequence of runs.:
-
-#################### Processing noise by run ########################
+################ Processing noise vs. channel by run ###############
 
 ./makejobs RUN1 [RUN2]
 # add these lines to runjobs.txt
