@@ -1,0 +1,13 @@
+.runjobs*
+ib4*
+chtTail
+plots-dft
+plots-noisesum
+rjfailed.log
+rjstarted.log
+rjfinished.log
+saveDft
+saveNoise
+www
+wwwdft
+*.png
